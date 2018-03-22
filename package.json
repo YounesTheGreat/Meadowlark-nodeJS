@@ -1,0 +1,11 @@
+{
+  "name": "meadowlark-travel-website",
+  "version": "1.0.0",
+  "description": "The Meadowlark Travel Website from Ethan Brown's book Web developpement with Node and Express",
+  "main": "mealowdark.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Younes KASRI",
+  "license": "ISC"
+}
