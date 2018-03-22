@@ -6,6 +6,7 @@ var handlebars = require("express-handlebars").create({
 	defaultLayout: "main"
 });
 
+
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 
@@ -15,12 +16,27 @@ app.set("port", process.env.PORT || 3000);
 app.use(express.static(__dirname + "/public"));
 
 
+
+var fortunes = [
+	"Conquer your fears or they conquer you",
+	"Rivers need springs",
+	"Do not fear what you don't know",
+	"You will have a pleasant surprise",
+	"Whenever possible, keep it simple"
+];
+
+function getRandomFortune(){
+	var idx = Math.floor(Math.random()*fortunes.length);
+	return fortunes[idx];
+}
+
+
 app.get("/", function(req, res){
 	res.render("home");
 });
 
 app.get("/about", function(req, res){
-	res.render("about");
+	res.render("about", {fortune: getRandomFortune()});
 });
 
 app.get("/about/contact", (req, res)=>res.send(" About Contacts") );
