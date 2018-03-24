@@ -19,8 +19,7 @@ app.use(express.static(__dirname + "/public"));
 
 
 app.use(function(req, res, next){
-	res.locals.showTests = app.get("env") !== "production" 
-					&& req.query.test == "1";
+	res.locals.showTests = app.get("env") !== "production" && req.query.test == "1";
 	next();				
 });
 
@@ -40,8 +39,12 @@ app.get("/about/contact", (req, res)=>res.send(" About Contacts") );
 app.get("/about*", (req, res)=>res.send(req.route.path));
 
 
+app.get("/tours/hood-river", (req, res)=>res.render("tours/hood-river"));
+
+app.get("/tours/request-group-rate", (req, res)=>res.render("tours/request-group-rate"));
+
 // 404 catch all handler (middleware)
-app.use( function(req, res, next){
+app.use( function(req, res){
 	res.status(404);
 	res.render("404");
 });
@@ -54,7 +57,6 @@ app.use( function(err, req, res, next){
 
 
 app.listen(app.get("port"), function(){
-	console.log("Express started on http://localhost:"
-		+app.get("port")+"; Press Crtl-C to terminate. ");
+	console.log("Express started on http://localhost:"+app.get("port")+"; Press Crtl-C to terminate. ");
 });
 
