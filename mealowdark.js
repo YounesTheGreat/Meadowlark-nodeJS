@@ -29,7 +29,10 @@ app.get("/", function(req, res){
 });
 
 app.get("/about", function(req, res){
-	res.render("about", {fortune: fortune.getRandomFortune() });
+	res.render("about", {
+		fortune: fortune.getRandomFortune(),
+		pageTestScript: "/qa/tests-about.js" 
+	});
 });
 
 app.get("/about/contact", (req, res)=>res.send(" About Contacts") );
