@@ -1,2 +1,3 @@
 - Practice doesn't make perfect : practice makes permanent
 - Remember the first princple of performance tuning : Profile first, then optimize.
+- Testing entropic functionality comes with its own challenges.
