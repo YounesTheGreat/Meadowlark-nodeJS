@@ -98,7 +98,7 @@ app.post("/process-contact2", function(req, res){
 	try {
 		// save to database ..
 
-		return res.xhr ? 
+		return res.xhr ?  res.render({success: true}) : res.redirect(303, "/thank-you");
 	} catch (ex) {
 		return res.xhr ?
 			res.json({error: "database error"}) :
