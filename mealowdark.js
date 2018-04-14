@@ -13,9 +13,9 @@ var fortune = require("./lib/fortune");
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 
-
 app.set("port", process.env.PORT || 3000);
 
+app.disable("x-powered-by"); /* for SECURITY */ 
 
 app.use(express.static(__dirname + "/public"));
 
@@ -44,6 +44,14 @@ app.get("/about*", (req, res)=>res.send(req.route.path));
 app.get("/tours/hood-river", (req, res)=>res.render("tours/hood-river"));
 
 app.get("/tours/request-group-rate", (req, res)=>res.render("tours/request-group-rate"));
+
+
+app.get("/headers", function(req, res){
+	res.set('Content-Type', 'text/plain');
+	var s = '';
+	for (var name in req.headers) s += name + ':' + req.headers[name] + '\n';
+	res.send(s);
+});
 
 // 404 catch all handler (middleware)
 app.use( function(req, res){
