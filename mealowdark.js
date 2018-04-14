@@ -108,11 +108,13 @@ app.post("/process-contact2", function(req, res){
 
 
 
-// Providing an API
+// Providing an API 
 var tours = [
 	{id: 0, name: "Hood River", price: 99.99},
 	{id: 1, name: "Oregon Coast", price: 149.95}
 ];
+/* The term "endpoint" is often used to describe a single function in an API
+*/
 // Simple GET endpoint returning only JSON
 app.get("api/tours", function(req ,res){
 	res.json(tours);
