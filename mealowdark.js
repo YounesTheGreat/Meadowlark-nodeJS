@@ -164,8 +164,8 @@ app.put("/api/tour/:id", function(req, res){
 });
 
 
-// DEL endpoint
-app.del("/api/tour/:id", function(req, res){
+// DELETE endpoint
+app.delete("/api/tour/:id", function(req, res){
 	var i;
 	for(var i=tours.length-1; i>=0; i--)
 		if (tours[i].id == req.params.id) break;
