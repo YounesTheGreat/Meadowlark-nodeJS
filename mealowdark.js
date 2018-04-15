@@ -178,6 +178,34 @@ app.delete("/api/tour/:id", function(req, res){
 	}
 });
 
+app.get("/test-handlebars", function(req, res){
+	var contextObject = {
+		currency: {
+			name: "United States dollars",
+			abbrev: "USD",
+		},
+		tours: [
+			{name: "Hood River", price: "$99.95"},
+			{name: "Oregon Coast", price: "$159.95"}
+		],
+		specialsUrl: "/january-specials",
+		currencies: ['USD', 'GBP', 'BTC']	
+	};
+
+	res.render("home", {
+		currency: {
+			name: "United States dollars",
+			abbrev: "USD",
+		},
+		tours: [
+			{name: "Hood River", price: "$99.95"},
+			{name: "Oregon Coast", price: "$159.95"}
+		],
+		specialsUrl: "/january-specials",
+		currencies: ['USD', 'GBP', 'BTC']	
+	});
+});
+
 // 404 catch all handler (middleware)
 app.use( function(req, res){
 	res.status(404);

@@ -1,1 +1,44 @@
 <h1>Welcome to Meadowlark Travel</h1>
+
+{{! super-secret comment }}
+<!-- not so-secret-comment --> 
+
+{{#if tours}}
+	<ul>
+		{{#each tours}}
+			{{! I'm in a new block.. and the context has changed }}
+			<li>
+				{{ name }} - {{ price }}
+				{{#if ../currency }}
+					({{../currency.abbrev}})
+				{{/if}}
+			</li>
+		{{/each}}
+	</ul>
+
+	{{#unless currencies}}
+		<p>All prices in {{currency.name}}</p>
+	{{/unless}}
+
+	{{#if specialsUrl}}
+		{{! I'm in a new block... But the context hasn't changed (sortof)}}
+		<p>Check out our <a href="{{specialsUrl}}">specials!</a></p>
+	{{else}}
+		<p>Please check back often for specials</p>
+	{{/if}}
+
+	<p>
+		{{#each currencies}}
+			<a href="#" class="currency">{{.}}</a>
+		{{else}}
+			Unfortunately, we currently only accept {{currency.name}}.
+		{{/each}}
+	</p>
+
+
+	<ul>
+		{{#each currencies}}
+			<h4>{{.}}</h4>
+		{{/each}}
+	</ul>
+{{/if}}
