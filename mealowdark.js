@@ -4,11 +4,11 @@ var express = require("express");
 
 var app = express();
 
+var fortune = require("./lib/fortune");
+
 var handlebars = require("express-handlebars").create({
 	defaultLayout: "main"
 });
-
-var fortune = require("./lib/fortune");
 
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
@@ -228,5 +228,19 @@ app.use(function(err, req, res, next){
 
 app.listen(app.get("port"), function(){
 	console.log("Express started on http://localhost:"+app.get("port")+"; Press Crtl-C to terminate. ");
+	/*
+	*	Liste des routes ( sans middlewares )
+	*/
+	app._router.stack.forEach(function(r){
+		if (r.route){
+			//console.log(r.route);
+			let path = r.route.path;
+			let m = r.route.methods;
+			let methods="";
+			if (m.get) methods += "GET ";
+			if (m.post) methods += "POST";
+			console.log(methods+"\t"+path);
+		 }
+	});
 });
 
