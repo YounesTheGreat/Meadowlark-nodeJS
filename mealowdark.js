@@ -4,7 +4,8 @@ var express = require("express");
 
 var app = express();
 
-var fortune = require("./lib/fortune");
+var fortune = require("./lib/fortune"),
+	weather = require("./lib/weather");
 
 var handlebars = require("express-handlebars").create({
 	defaultLayout: "main"
@@ -18,6 +19,29 @@ app.set("port", process.env.PORT || 3000);
 app.disable("x-powered-by"); /* for SECURITY */ 
 
 app.use(express.static(__dirname + "/public"));
+
+app.use(function(req, res, next){
+	//if (!res.locals.partials) res.locals.partials = {};
+	//res.locals.partials.weather = weather();
+	/*res.locals.weather = weather();
+	console.log(res.locals.partials.weather);
+	console.log(res.locals.weather);*/
+	/*console.log("Holaaaa");
+	try {
+		if (!res.locals.partials) console.log("Not yeeeeet");
+		res.locals.partials = {
+			weather: weather()
+		};
+
+		console.log(res.locals);
+
+		if (!res.locals) console.log("still empty??");
+	} catch (e) {
+		console.log(e);
+	}*/
+	res.locals.weather = weather();
+	next();
+});
 
 
 app.use(function(req, res, next){
@@ -207,7 +231,7 @@ app.get("/test-handlebars", function(req, res){
 });
 
 // 404 catch all handler (middleware)
-app.use( function(req, res){
+app.use( function(req, res, next){
 	res.status(404);
 	res.render("404");
 });
