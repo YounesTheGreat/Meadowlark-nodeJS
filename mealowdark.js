@@ -36,11 +36,33 @@ app.use(require("body-parser")()); // npm install --save body-parser
 
 // CookieParser: npm install --save cookie-parser
 app.use(require("cookie-parser")(credentials.cookieSecret));
+app.use(require("express-session")());
 
 app.use(function exampleSetCookies(req, res, next){
 	res.cookie("monster", "noM nom");
 	res.cookie("signed_monster", "nOm NOM", {signed: true});
+	next();
 });
+
+app.use(function exampleUsingSession(req, res, next){
+	req.session.username = "Anonymous";
+	var colorScheme = req.session.colorScheme || "dark";
+	next();
+});
+
+app.use(function exampleDeleteFromSession(req, res, next){
+	req.session.username = null; // sets to null but doesn't remove it
+	delete req.session.colorScheme; // this removes colorScheme
+});
+
+// Using Session to implement Flash Messages
+app.use(function(req, res, next){
+	// if there's a dlash message, transfer it to the context, then clear it;
+	res.locals.flash = req.session.flash;
+	delete req.session.flash;
+	next();
+});
+
 
 // getWeather
 app.use(function(req, res, next){
@@ -324,6 +346,46 @@ app.post("/contest/vacation-photo/:year/:month", function(req ,res){
 		console.log("received fields:");
 		console.log(files);
 		res.redirect(303, "/thank-you");
+	});
+});
+
+app.post("/newsletter", function(req, res){
+	var name = req.body.name ||'';
+	var email = req.body.email || '';
+	// input validation
+	if (!email.match(VALID_EMAIL_REGEX)){
+		if (req.xhr) return res.json({error: "Invalid name email address"});
+		req.session.flash = {
+			type: "danger",
+			intro: "Validation error!",
+			message: "The email address tou entered was not valid"
+		};
+		return res.redirect(303, "/newsletter/archive");
+	}
+
+	/*
+	*	Because the flash message is being transeferred from the session
+	* to res.locals.flash in our middleware, you have to perform a redirect for
+	* the flash message to be displayed. If you want to display a flash message
+	* without redirecting, set res.locals.flash instead of req.session.flash
+	*/
+	new NewsletterSignup({name: name, email: email}).save(function(err){
+		if (err){
+			if (req.xhr) return res.json({error: "Database"});
+			req.session.flash = {
+				type: "danger",
+				intro: "Database error!",
+				message: "There was a database error; please try again later"
+			}
+			return res.redirect(303, "/newsletter/archive");
+		}
+		if (req.xhr) return res.json({ success: true });
+		req.session.flash = {
+			type: "success",
+			intro: "Thank you!",
+			message: "You have now been signed up for the newsletter"
+		};
+		return res.redirect(303, "/newsletter/archive");
 	});
 });
 
