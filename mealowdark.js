@@ -8,8 +8,15 @@ var fortune = require("./lib/fortune"),
 	weather = require("./lib/weather");
 
 var handlebars = require("express-handlebars").create({
-	defaultLayout: "main"
-});
+	defaultLayout: "main",
+	helpers: {
+		section: function(name, options){
+			if (!this._section) this._sections = {};
+			this._sections[name] = options.fn(this);
+			return null;
+		}
+	}
+}); 
 
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
@@ -227,6 +234,19 @@ app.get("/test-handlebars", function(req, res){
 		],
 		specialsUrl: "/january-specials",
 		currencies: ['USD', 'GBP', 'BTC']	
+	});
+});
+
+app.get("/nursery-rhyme", function(req, res){
+	res.render("nursery-rhyme");
+});
+
+app.get("/data/nursery-rhyme", function(req, res){
+	res.json({
+		animal: "squirrel",
+		bodyPart: "tail",
+		adjective: "bushy",
+		noun: "heck"
 	});
 });
 
