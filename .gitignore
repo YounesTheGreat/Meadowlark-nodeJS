@@ -3,3 +3,7 @@ node_modules
 
 # ignore temp files
 *~
+
+# our secret keys
+.env*
+credentials.js
