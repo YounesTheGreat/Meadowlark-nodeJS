@@ -7,6 +7,8 @@ var app = express();
 var fortune = require("./lib/fortune"),
 	weather = require("./lib/weather");
 
+var formidable = require("formidable"); // npm install --save formidable
+
 var handlebars = require("express-handlebars").create({
 	defaultLayout: "main",
 	helpers: {
@@ -26,6 +28,8 @@ app.set("port", process.env.PORT || 3000);
 app.disable("x-powered-by"); /* for SECURITY */ 
 
 app.use(express.static(__dirname + "/public"));
+
+app.use(require("body-parser")()); // npm install --save body-parser
 
 app.use(function(req, res, next){
 	//if (!res.locals.partials) res.locals.partials = {};
@@ -249,6 +253,44 @@ app.get("/data/nursery-rhyme", function(req, res){
 		noun: "heck"
 	});
 });
+
+app.get("/newsletter", function(req, res){
+	// we will learn about CSRF later.. for now, we just provide a dummy value
+	res.render("newsletter", {csrf: "CSRF token goes here"});
+});
+
+app.post("/process", function(req, res){
+	console.log("Form (from querystring): " + req.query.form);
+	console.log("CSRF token (from hidden form field): " + req.body._csrf);
+	console.log("Name (from visible form field): " + req.body.name);
+	console.log("Email (from visible form field): " + req.body.email);
+
+	if (req.xhr || req.accepts("json, html") === "json"){
+		res.send({success: true});
+	} else {
+		res.redirect(303, "/thank-you"); // use 303 (or 302) instead of 301 (see p90)
+	}
+});
+
+app.get("/contest/vacation-photo", function(req, res){
+	var now = new Date();
+	res.render("contest/vacation-photo", {
+		year: now.getFullYear(), 
+		month: now.getMont()
+	});
+});
+
+app.post("/contest/vacation-photo/:year/:month", function(req ,res){
+	var form = new formidable.IncomingForm();
+	form.parse(req, function(err, fields, files){
+		if (err) return res.redirect(303, "/error");
+		console.log("received fields:");
+		console.log(files);
+		res.redirect(303, "/thank-you");
+	});
+});
+
+
 
 // 404 catch all handler (middleware)
 app.use( function(req, res, next){
