@@ -1,17 +1,12 @@
 /* jshint esversion: 6 */
-
 var express = require("express");
-
 var app = express();
-
 var fortune = require("./lib/fortune"),
 	weather = require("./lib/weather"),
 	credentials = require("./credentials.js");
 
 var formidable = require("formidable"); // npm install --save 
-
 var jqupload = require("jquery-file-upload-middleware"); // npm install --save
-
 var handlebars = require("express-handlebars").create({
 	defaultLayout: "main",
 	helpers: { // didn't work ?
@@ -27,11 +22,8 @@ app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 
 app.set("port", process.env.PORT || 3000);
-
 app.disable("x-powered-by"); /* for SECURITY */ 
-
 app.use(express.static(__dirname + "/public"));
-
 app.use(require("body-parser").urlencoded({extended: false})); // npm install --save body-parser
 
 // CookieParser: npm install --save cookie-parser
@@ -216,19 +208,16 @@ var tours = [
 /* The term "endpoint" is often used to describe a single function in an API
 */
 // Simple GET endpoint returning only JSON
-app.get("api/tours", function(req ,res){
-	res.json(tours);
-});
-
-app.get("/api/tours", function(req, res){
-	res.json(tours);
+app.get("api/tours", function(req ,res, next){
+	//res.json(tours);
+	return next();
 });
 
 
 // GET endpoint that returns JSON, XML, or text
 app.get("/api/tours", function(req, res){
 	var toursXml = '<?xml version="1.0"?><tours>'+
-		products.map(function(p){
+		tours.map(function(p){
 			return '<tour price="'+p.price+'" id="'+p.id+'">' + p.name + '</tour>';
 		}).join('') + '</tours>';
 	var toursText = tours.map(function(p){
@@ -250,7 +239,6 @@ app.get("/api/tours", function(req, res){
 	});
 });
 
-
 // PUT endpoint for updating
 app.put("/api/tour/:id", function(req, res){
 	var p = tours.some( function(p){ return p.id == req.params.id });
@@ -262,7 +250,6 @@ app.put("/api/tour/:id", function(req, res){
 		res.json({error: "No such tour exists"});
 	}
 });
-
 
 // DELETE endpoint
 app.delete("/api/tour/:id", function(req, res){
@@ -278,7 +265,7 @@ app.delete("/api/tour/:id", function(req, res){
 	}
 });
 
-// Some dummy date: products with prices
+// Some dummy data: products with prices
 app.get("/test-handlebars", function(req, res){
 	var contextObject = {
 		currency: {
@@ -306,6 +293,7 @@ app.get("/test-handlebars", function(req, res){
 		currencies: ['USD', 'GBP', 'BTC']	
 	});
 });
+
 
 app.get("/nursery-rhyme", function(req, res){
 	res.render("nursery-rhyme");
@@ -338,11 +326,13 @@ app.post("/process", function(req, res){
 	}
 });
 
+app.get("/thank-you", (req, res)=>res.send("Thank you a sat"));
+
 app.get("/contest/vacation-photo", function(req, res){
 	var now = new Date();
 	res.render("contest/vacation-photo", {
 		year: now.getFullYear(), 
-		month: now.getMont()
+		month: now.getMonth()
 	});
 });
 
