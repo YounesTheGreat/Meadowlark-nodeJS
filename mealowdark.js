@@ -36,7 +36,7 @@ app.use(require("body-parser").urlencoded({extended: false})); // npm install --
 
 // CookieParser: npm install --save cookie-parser
 app.use(require("cookie-parser")(credentials.cookieSecret));
-//app.use(require("express-session")());
+app.use(require("express-session")());
 
 /*
 // Chapter 10 - middlewares
@@ -54,12 +54,13 @@ app.use(function(req, res, next){
 
 
 app.use(function exampleSetCookies(req, res, next){
+	res.cookie("userId", "testuserid");
 	res.cookie("monster", "noM nom");
 	res.cookie("signed_monster", "nOm NOM", {signed: true});
 	next();
 });
 
-/*
+
 app.use(function exampleUsingSession(req, res, next){
 	req.session.username = "Anonymous";
 	var colorScheme = req.session.colorScheme || "dark";
@@ -79,7 +80,6 @@ app.use(function(req, res, next){
 	delete req.session.flash;
 	next();
 });
-*/
 
 // getWeather
 app.use(function(req, res, next){
@@ -110,7 +110,7 @@ app.get("/show-cookies", function exampleGetCookies(req, res){
 	var monster = req.cookies.monster;
 	var signedMonster = req.signedCookies.signed_monster;
 
-	var message = 'cookie monster = ' + monster + ' cookie signedMonster = '+signedMonster;
+	var message = 'cookie monster = ' + monster + ' cookie signedMonster = '+signedMonster + 'userId '+ req.cookies.userId;
 	message += '<a href="/clear-cookies">ClearCookies</a>'
 	res.send(message);
 	// no need to call next(), this will terminate the request
@@ -160,7 +160,7 @@ app.get("/greeting2", function(req, res){
 	res.render("about", {
 		message: 'welcome',
 		style: req.query.style,
-		userId: req.cookie.userId,
+		userId: req.cookies.userId,
 		username: req.session.username	
 	});
 });
