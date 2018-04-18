@@ -1,13 +1,13 @@
 /* jshint esversion: 6 */
-var express = require("express");
-var app = express();
-var fortune = require("./lib/fortune"),
+const express = require("express");
+const app = express();
+const fortune = require("./lib/fortune"),
 	weather = require("./lib/weather"),
 	credentials = require("./credentials.js");
 
-var formidable = require("formidable");
-var jqupload = require("jquery-file-upload-middleware"); // npm install --save
-var handlebars = require("express-handlebars").create({
+const formidable = require("formidable");
+const jqupload = require("jquery-file-upload-middleware"); // npm install --save
+const handlebars = require("express-handlebars").create({
 	defaultLayout: "main",
 	helpers: { // didn't work ?
 		section: function(name, options){
@@ -17,6 +17,12 @@ var handlebars = require("express-handlebars").create({
 		}
 	}
 }); 
+
+const nodemailer = require("nodemailer");
+const crypto = require("./lib/crypto");
+let mailTransport = nodemailer.createTransport(
+	crypto.decrypt(credentials.gmail.url));
+
 
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
@@ -51,6 +57,24 @@ app.use("/upload", function(req, res, next){
 app.use(function(req, res, next){
 	res.locals.showTests = app.get("env") !== "production" && req.query.test == "1";
 	next();				
+});
+
+// Sending Email
+app.get("/send-email", function showEmailForm(req, res, next){
+	res.render("send-email", {layout: null});
+}).post("/send-email", function sendGmail(req, res, next){
+	mailTransport.sendMail({
+		from: req.body.from || '"Meadowlark Travel" <info@meadowlarktravel.com>',
+		to: req.body.to || 'youneskasri@gmail.com',
+		subject: req.body.subject || 'Your Meadowlark Travel Tour',
+		text: req.body.message || "No message ?"
+	}, function(err){
+		if (err) console.error("Unable to send email : "+err);
+		else {
+			console.log("Successfuly sent Email");
+			return res.redirect(303, "home");
+		}
+	});
 });
 
 // Some Routing

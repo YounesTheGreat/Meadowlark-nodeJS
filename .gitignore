@@ -7,3 +7,4 @@ node_modules
 # our secret keys
 .env*
 credentials.js
+lib/crypto.js
