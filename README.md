@@ -1,3 +1,4 @@
 - Practice doesn't make perfect : practice makes permanent
 - Remember the first princple of performance tuning : Profile first, then optimize.
 - Testing entropic functionality comes with its own challenges.
+- There is no absolute rule except this one: never write html inside javascript.
