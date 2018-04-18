@@ -60,22 +60,7 @@ app.use(function(req, res, next){
 });
 
 // Sending Email
-app.get("/send-email", function showEmailForm(req, res, next){
-	res.render("send-email", {layout: null});
-}).post("/send-email", function sendGmail(req, res, next){
-	mailTransport.sendMail({
-		from: req.body.from || '"Meadowlark Travel" <info@meadowlarktravel.com>',
-		to: req.body.to || 'youneskasri@gmail.com',
-		subject: req.body.subject || 'Your Meadowlark Travel Tour',
-		text: req.body.message || "No message ?"
-	}, function(err){
-		if (err) console.error("Unable to send email : "+err);
-		else {
-			console.log("Successfuly sent Email");
-			return res.redirect(303, "home");
-		}
-	});
-});
+require("./lib/emails")(app, mailTransport);
 
 // Some Routing
 require("./lib/routing")(app);
