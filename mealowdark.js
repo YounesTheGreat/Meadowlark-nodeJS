@@ -14,7 +14,7 @@ var jqupload = require("jquery-file-upload-middleware"); // npm install --save
 
 var handlebars = require("express-handlebars").create({
 	defaultLayout: "main",
-	helpers: {
+	helpers: { // didn't work ?
 		section: function(name, options){
 			if (!this._section) this._sections = {};
 			this._sections[name] = options.fn(this);
@@ -32,11 +32,26 @@ app.disable("x-powered-by"); /* for SECURITY */
 
 app.use(express.static(__dirname + "/public"));
 
-app.use(require("body-parser")()); // npm install --save body-parser
+app.use(require("body-parser").urlencoded({extended: false})); // npm install --save body-parser
 
 // CookieParser: npm install --save cookie-parser
 app.use(require("cookie-parser")(credentials.cookieSecret));
-app.use(require("express-session")());
+//app.use(require("express-session")());
+
+/*
+// Chapter 10 - middlewares
+app.use(function(req, res, next){
+	console.log("Processing request for "+ req.url +"...");
+}).use(function(req, res, next){
+	console.log("terminating request");
+	res.send("thanks for playing !");
+	res.end();
+	// note that we do NOT call next() here.. => this terminates the request
+}).use(function(req, res, next){
+	console.log("Whoops, i'll never get called !");
+}); */
+
+
 
 app.use(function exampleSetCookies(req, res, next){
 	res.cookie("monster", "noM nom");
@@ -44,6 +59,7 @@ app.use(function exampleSetCookies(req, res, next){
 	next();
 });
 
+/*
 app.use(function exampleUsingSession(req, res, next){
 	req.session.username = "Anonymous";
 	var colorScheme = req.session.colorScheme || "dark";
@@ -53,6 +69,7 @@ app.use(function exampleUsingSession(req, res, next){
 app.use(function exampleDeleteFromSession(req, res, next){
 	req.session.username = null; // sets to null but doesn't remove it
 	delete req.session.colorScheme; // this removes colorScheme
+	next();
 });
 
 // Using Session to implement Flash Messages
@@ -62,28 +79,10 @@ app.use(function(req, res, next){
 	delete req.session.flash;
 	next();
 });
-
+*/
 
 // getWeather
 app.use(function(req, res, next){
-	//if (!res.locals.partials) res.locals.partials = {};
-	//res.locals.partials.weather = weather();
-	/*res.locals.weather = weather();
-	console.log(res.locals.partials.weather);
-	console.log(res.locals.weather);*/
-	/*console.log("Holaaaa");
-	try {
-		if (!res.locals.partials) console.log("Not yeeeeet");
-		res.locals.partials = {
-			weather: weather()
-		};
-
-		console.log(res.locals);
-
-		if (!res.locals) console.log("still empty??");
-	} catch (e) {
-		console.log(e);
-	}*/
 	res.locals.weather = weather();
 	next();
 });
@@ -107,15 +106,20 @@ app.use(function(req, res, next){
 	next();				
 });
 
-app.get("/show-cookies", function exampleGetCookies(){
+app.get("/show-cookies", function exampleGetCookies(req, res){
 	var monster = req.cookies.monster;
 	var signedMonster = req.signedCookies.signed_monster;
-	res.send('<a href="/clear-cookies">ClearCookies</a>');
-	res.end();
+
+	var message = 'cookie monster = ' + monster + ' cookie signedMonster = '+signedMonster;
+	message += '<a href="/clear-cookies">ClearCookies</a>'
+	res.send(message);
+	// no need to call next(), this will terminate the request
 });
 
-app.get("/clear-cookies", function clearMonsterCookie(){
+app.get("/clear-cookies", function clearMonsterCookie(req ,res){
 	res.clearCookie("monster");
+	res.clearCookie("signed_monster");
+	return res.redirect(303, "/show-cookies");
 });	
 
 app.get("/", function(req, res){
@@ -405,7 +409,7 @@ error handler
 */
 app.use(function(err, req, res, next){
 	res.status(500);
-	res.render("500");
+	res.render("500", {error: err});
 });
 
 
